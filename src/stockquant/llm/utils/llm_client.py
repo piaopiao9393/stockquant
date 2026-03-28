@@ -203,6 +203,23 @@ class DeepSeekClient(OpenAIClient):
         return api_key
 
 
+class KimiClient(OpenAIClient):
+    """Kimi (Moonshot AI) API 客户端（兼容OpenAI格式）"""
+
+    def __init__(self, model: str = "moonshot-v1-8k", api_key: Optional[str] = None):
+        super().__init__(
+            model=model,
+            api_key=api_key,
+            base_url="https://api.moonshot.cn/v1",
+        )
+
+    def _get_api_key(self) -> str:
+        api_key = os.getenv("KIMI_API_KEY")
+        if not api_key:
+            raise ValueError("KIMI_API_KEY environment variable not set")
+        return api_key
+
+
 class MockLLMClient(BaseLLMClient):
     """模拟 LLM 客户端 - 用于测试"""
 
