@@ -41,11 +41,18 @@ class UnifiedDataFetcher:
         logger.info(f"使用数据源: {self.source_type.value}")
 
     def _auto_select_source(self, token: Optional[str]) -> DataSourceType:
-        """自动选择数据源"""
-        if token or os.getenv('TUSHARE_TOKEN'):
+        """自动选择数据源 - 优先使用AKShare"""
+        from stockquant.config import get_settings
+
+        settings = get_settings()
+        prefer_tushare = settings.data.default_source == 'tushare'
+        has_token = token or settings.data.tushare_token
+
+        if prefer_tushare and has_token:
+            logger.info("使用Tushare作为数据源")
             return DataSourceType.TUSHARE
         else:
-            logger.info("未检测到Tushare Token，使用AKShare作为数据源")
+            logger.info("使用AKShare作为数据源（免费，无需Token）")
             return DataSourceType.AKSHARE
 
     def _create_fetcher(self, token: Optional[str]):
